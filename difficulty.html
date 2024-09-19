@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Fragment+Mono&display=swap" rel="stylesheet">
+    <title>colorle</title>
+    <link rel="icon" href="img/favicon.png">
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
+    body {
+        background: rgb(228, 172, 92);
+        user-select: none;
+        overflow: hidden;
+    }
+
+    h1 {
+        font-family: 'Gloria Hallelujah', cursive;
+        font-size: 48px;
+        text-align: center;
+        margin-top: 20vh;
+        color: #5a3703;
+    }
+
+    .modality {
+        display: flex;
+        align-items: center;
+        justify-self: center;
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+    
+    .modality button {
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        width: 300px;
+        font-family: 'Fragment Mono', sans-serif;
+        font-size: 14px;
+        border: 1px solid #000;
+        border-radius: 3px;
+    }
+
+    #e {
+        background-color: green;
+    }
+
+    #m {
+        background-color: yellow;
+    }
+
+    #h {
+        background-color: orange;
+    }
+
+    #i {
+        background-color: red;
+    }
+
+    @media screen and (max-width: 468px) {
+        .box {
+            transform: scale(0.9);
+        }
+    }
+
+    @media screen and (max-width: 420px) {
+        .box {
+            transform: scale(0.8);
+        }
+    }
+</style>
+<body>
+<div class="box">
+    <h1>Select Difficulty</h1>
+    <div class="modality">
+        <button id="e" onclick="selectDifficulty('easy')">Easy</button>
+        <button id="m" onclick="selectDifficulty('medium')">Medium</button>
+        <button id="h" onclick="selectDifficulty('hard')">Hard</button>
+        <button id="i" onclick="selectDifficulty('impossible')">Impossible</button>
+    </div>
+</div>
+<script>
+    function selectDifficulty(level) {
+        window.location.href = `game.html?difficulty=${level}`;
+    }
+</script>
+</body>
+</html>

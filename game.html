@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Fragment+Mono&display=swap" rel="stylesheet">
+    <title>colorle</title>
+    <link rel="icon" href="img/favicon.png">
+</head>
+<body>
+
+<style>
+body {
+    background: rgb(228, 172, 92);
+}
+
+.vc-sketch, .vc-chrome {
+    box-shadow: none;
+}
+
+.vc-sketch {
+    border-radius: 0;
+}
+
+.vc-chrome-body, .vc-sketch, .vc-chrome {
+    background: transparent;
+}
+
+.vue-color-picker {
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    top: -40px;
+    position: relative;
+}
+
+.vue-color-picker-container {
+    background: #fff;
+    position: relative;
+    top: -60px;
+}
+
+.vc-sketch, .vc-chrome {
+    width: 400px;
+    position: relative;
+}
+
+.vc-chrome {
+    height: 357px;
+    margin-top: 220px;
+    padding: 10px;
+}
+
+.vc-sketch-alpha-wrap, .vc-sketch-hue-wrap, .vc-chrome-alpha-wrap, .vc-chrome-hue-wrap {
+    height: 15px;
+}
+
+.vc-chrome-hue-wrap .vc-hue-picker, .vc-chrome-alpha-wrap .vc-alpha-picker {
+    width: 16px;
+    height: 16px;
+}
+
+.vc-saturation-circle, .vc-chrome-saturation-wrap .vc-saturation-circle {
+    width: 12px;
+    height: 12px;
+}
+
+.vc-hue-picker, .vc-alpha-picker {
+    width: 16px;
+    height: 16px;
+    border-radius: 6px;
+    transform: translate(-6px, -2px);
+    background-color: rgb(248, 248, 248);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+    z-index: 10;
+}
+
+.vc-chrome-fields .vc-input__input {
+    height: 30px;
+    font-size: 16px;
+    font-family: 'Fragment Mono', sans-serif;
+}
+
+.vc-sketch-field .vc-input__input {
+    height: 23px;
+    font-size: 14px;
+}
+
+.vc-chrome-fields .vc-input__label, .vc-sketch-field .vc-input__label {
+    text-transform: uppercase;
+    font-size: 16px;
+    color: #969696;
+    font-family: "Fragment Mono", sans-serif;
+}
+
+.vc-sketch-color-wrap {
+    width: 50px;
+    height: 35px;
+}
+
+.vc-chrome-color-wrap {
+    position: absolute;
+    width: 36px;
+    margin-top: 130px;
+}
+
+.vc-chrome-color-wrap .vc-checkerboard, .vc-chrome-active-color {
+    width: 370px;
+    height: 40px;
+    border-radius: 2px;
+    top: -420px;
+    position: absolute;
+}
+
+.vc-sketch-presets-color {
+    width: 20px;
+    height: 20px;
+}
+
+.vc-alpha-container, .vc-alpha-gradient, .vc-checkerboard {
+    display: none;
+}
+
+.vc-chrome-toggle-icon {
+    margin-right: -7px;
+    margin-top: 10px;
+}
+
+.vc-chrome-toggle-icon svg {
+    width: 30px !important;
+    height: 30px !important;
+    background: #fff;
+}
+
+#guessColor {
+    width: 370px;
+    height: 130px;
+    top: 50px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 2px;
+    position: relative;
+    z-index: 100;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#button, #retryButton {
+    position: relative;
+    top: -110px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    cursor: pointer;
+    width: 420px;
+    font-size: 18px;
+    font-family: 'Fragment Mono', sans-serif;
+    display: block;
+}
+
+#retryButton {
+    display: none;
+    background-color: rgb(39, 6, 184);
+}
+
+#textResult {
+    width: 100%;
+    left: 50%;
+    width: 420px;
+    transform: translateX(-50%);
+    position: relative;
+    margin-top: -100px;
+}
+
+#textResult ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#textResult li {
+    background: white;
+    padding: 5px;
+    font-family: 'Fragment Mono', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+@media screen and (max-width: 468px) {
+    .box {
+        transform: scale(0.9);
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .box {
+        transform: scale(0.8);
+    }
+}
+
+#tolerance {
+    position: absolute;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Fragment Mono', sans-serif;
+}
+
+</style>
+<div class="box">
+    <div id="guessColor"></div>
+    <div class="vue-color-picker">
+        <div class="vue-color-picker-container">
+            <div id="vue_chrome_picker">
+                <chrome-color id="color" v-model="color"></chrome-color>
+                <div id="tolerance"></div>
+            </div>
+        </div>
+    </div>
+    <button id="button" onclick="check()">CHECK</button>
+    <button id="retryButton" onclick="retry()">PLAY AGAIN</button>
+    <div id="textResult">
+        <ul id="attemptsList"></ul>
+    </div>
+    
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-color/2.8.1/vue-color.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
+<script>
+    let tolerance = 50;
+
+    function getDifficultyFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const difficulty = urlParams.get('difficulty');
+
+        switch(difficulty) {
+            case 'easy':
+                return 50;
+            case 'medium':
+                return 30;
+            case 'hard':
+                return 10;
+            case 'impossible':
+                return 5;
+            default:
+                return 50;
+        }
+    }
+
+    tolerance = getDifficultyFromURL();
+    document.getElementById('tolerance').innerText = `Tolerance: ${tolerance.toFixed(2)}`;
+
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    function setGuessColor() {
+        const storedColor = localStorage.getItem('guessColor');
+        if (storedColor) {
+            document.getElementById('guessColor').style.backgroundColor = storedColor;
+        } else {
+            const newColor = getRandomColor();
+            localStorage.setItem('guessColor', newColor);
+            document.getElementById('guessColor').style.backgroundColor = newColor;
+        }
+    }
+
+    function loadAttempts() {
+        const attempts = JSON.parse(localStorage.getItem('attempts')) || [];
+        const attemptsList = document.getElementById("attemptsList");
+        attemptsList.innerHTML = ''; 
+
+        attempts.forEach(attempt => {
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                <span style="background-color: ${attempt.yourColor}; width: 45px; height: 25px; display: inline-block; margin-right: -30px; border: 1px solid #000;"></span>
+                <span>${attempt.yourColor}</span>
+                <span>${attempt.distance}</span>
+                <span>${attempt.status}</span>
+            `;
+            attemptsList.appendChild(listItem);
+        });
+    }
+
+    new Vue({
+        el: "#vue_chrome_picker",
+        components: {
+            ChromeColor: VueColor.Chrome
+        },
+        data: {
+            color: "#CF4FE0"
+        }
+    });
+
+    function colorToRgb(color) {
+        let rgb = [];
+        if (color.startsWith('rgb')) {
+            rgb = color.match(/\d+/g).map(Number);
+        } else if (color.startsWith('#')) {
+            let hex = color.slice(1);
+            if (hex.length === 3) {
+                hex = hex.split('').map(h => h + h).join('');
+            }
+            rgb = [
+                parseInt(hex.slice(0, 2), 16),
+                parseInt(hex.slice(2, 4), 16),
+                parseInt(hex.slice(4, 6), 16)
+            ];
+        }
+        return rgb;
+    }
+
+    function colorDistance(color1, color2) {
+        let rgb1 = colorToRgb(color1);
+        let rgb2 = colorToRgb(color2);
+        return Math.sqrt(
+            Math.pow(rgb1[0] - rgb2[0], 2) +
+            Math.pow(rgb1[1] - rgb2[1], 2) +
+            Math.pow(rgb1[2] - rgb2[2], 2)
+        );
+    }
+
+    function check() {
+        const guessColor = window.getComputedStyle(document.getElementById("guessColor")).backgroundColor;
+        const colorPickerElement = document.querySelector(".vc-chrome-active-color");
+        const yourColor = colorPickerElement ? window.getComputedStyle(colorPickerElement).backgroundColor : null;
+
+        if (guessColor && yourColor) {
+            const distance = colorDistance(guessColor, yourColor);
+            let status;
+
+            const attempts = JSON.parse(localStorage.getItem('attempts')) || [];
+            const attemptCount = attempts.length;
+
+            if (distance <= tolerance) {
+                status = "✅";
+                document.getElementById("retryButton").style.display = "block";
+                document.getElementById("button").style.display = "none";
+                localStorage.setItem('gameStatus', 'won');
+            } else {
+                status = "❌";
+                if (attemptCount >= 3) {
+                    document.getElementById("retryButton").style.display = "block";
+                    document.getElementById("button").style.display = "none";
+                    localStorage.setItem('gameStatus', 'lost');
+                }
+            }
+
+            attempts.push({
+                yourColor: colorPickerElement.style.backgroundColor,
+                distance: distance.toFixed(2),
+                status: status
+            });
+            localStorage.setItem('attempts', JSON.stringify(attempts));
+
+            loadAttempts();
+        } else {
+            document.getElementById("result").innerText = 'Color values could not be retrieved.';
+        }
+    }
+
+    function retry() {
+        const newColor = getRandomColor();
+        localStorage.setItem('guessColor', newColor);
+        document.getElementById('guessColor').style.backgroundColor = newColor; 
+
+        localStorage.removeItem('attempts');
+        localStorage.removeItem('gameStatus');
+        loadAttempts();
+
+        document.getElementById("retryButton").style.display = "none";
+        document.getElementById("button").style.display = "block";
+        document.getElementById("result").innerText = '';
+    }
+
+    window.onload = function() {
+        setGuessColor();
+        loadAttempts();
+        const gameStatus = localStorage.getItem('gameStatus');
+        if (gameStatus === 'won' || gameStatus === 'lost') {
+            document.getElementById("retryButton").style.display = "block";
+            document.getElementById("button").style.display = "none";
+        } else {
+            document.getElementById("retryButton").style.display = "none";
+            document.getElementById("button").style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
